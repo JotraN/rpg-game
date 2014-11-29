@@ -9,29 +9,20 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Engine implements Screen {
     private final Yosefu game;
-    private OrthographicCamera camera, staticCamera;
+    private OrthographicCamera camera;
     private Player player;
     private Level level;
-    private ShapeRenderer shapeRenderer;
 
     public Engine(Yosefu game) {
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        staticCamera = new OrthographicCamera();
-        staticCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         player = new Player(game, this);
         level = new Level(game, this);
-        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
     public void render(float delta) {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-//            game.setScreen(new Battle(new Player(), new Enemy(0, 0), game, this));
-//            Gdx.app.exit();
-        }
-
         Gdx.gl.glClearColor(0.0f, 0.1f, 0.0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -40,7 +31,7 @@ public class Engine implements Screen {
 
         level.update(camera);
         player.processEvents();
-        player.update(level);
+        player.update();
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
@@ -48,10 +39,7 @@ public class Engine implements Screen {
         player.draw(game);
         game.batch.end();
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        level.draw(camera, shapeRenderer, staticCamera);
-        shapeRenderer.end();
+        level.draw(camera);
     }
 
     @Override
@@ -83,6 +71,5 @@ public class Engine implements Screen {
         player.dispose();
         game.dispose();
         level.dispose();
-        shapeRenderer.dispose();
     }
 }

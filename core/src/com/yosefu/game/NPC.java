@@ -8,8 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-public class NPC extends Rectangle {
-    private TextureRegion currentFrame;
+public class NPC extends Interactive {
     private TextBox textBox;
     private boolean talking = false;
 
@@ -29,13 +28,13 @@ public class NPC extends Rectangle {
         currentFrame = frames[0][0];
     }
 
-    public void draw(SpriteBatch batch, BitmapFont font, SpriteBatch staticBatch, OrthographicCamera camera) {
+    public void draw(SpriteBatch batch, BitmapFont font, SpriteBatch staticBatch) {
         batch.begin();
         batch.draw(currentFrame, x, y);
         batch.end();
 
         if(talking)
-            textBox.draw(font, staticBatch, camera);
+            textBox.draw(font, staticBatch);
     }
 
     public void update(){

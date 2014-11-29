@@ -33,23 +33,14 @@ public class TextBox {
         setup();
     }
 
-    public TextBox(float x, float y, String text) {
-        this.x = x;
-        this.y = y;
-        this.text = text;
-        shapeRenderer = new ShapeRenderer();
-        setup();
-    }
-
     private void setup(){
         // TODO Split text based on length
         lines = text.split("\\\\n");
         linesDrawn.addAll(Arrays.asList(lines));
     }
 
-    public void draw(BitmapFont font, SpriteBatch target, OrthographicCamera camera){
+    public void draw(BitmapFont font, SpriteBatch target){
         if(!finished) {
-            shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(0.41f, 0.51f, 0.36f, 1.0f);
             shapeRenderer.rect(x, y, width, height);
@@ -59,7 +50,6 @@ public class TextBox {
 
             int textX = (int) (x + 8);
             int textY = (int) (y + 142);
-            target.setProjectionMatrix(camera.combined);
             target.begin();
             int pos = 0;
             font.setScale(1);

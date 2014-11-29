@@ -14,15 +14,14 @@ public class Player extends Rectangle {
     private final Engine engine;
     private float velX = 0, velY = 0;
     private final float SPEED = 6;
-    private Texture spriteSheet;
-    private TextureRegion currentFrame;
-    private final Animation STANDING;
     private final Animation LEFTRIGHT;
     private final Animation UP;
     private final Animation DOWN;
     private float stateTime;
     private boolean checkInteraction = false;
     private boolean interacting = false;
+    private Texture spriteSheet;
+    private TextureRegion currentFrame;
     private Location playerLocation;
     private Stats stats;
 
@@ -35,17 +34,14 @@ public class Player extends Rectangle {
         height = 62;
 
         spriteSheet = new Texture(Gdx.files.internal("playersheet.png"));
-        int rows = 4, columns = 4;
+        int rows = 3, columns = 4;
         TextureRegion[][] frames = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / columns, spriteSheet.getHeight() / rows);
         LEFTRIGHT = new Animation(0.1f, frames[0]);
-        STANDING = new Animation(0.1f, frames[1]);
-        DOWN = new Animation(0.1f, frames[2]);
-        UP = new Animation(0.1f, frames[3]);
+        DOWN = new Animation(0.1f, frames[1]);
+        UP = new Animation(0.1f, frames[2]);
         stateTime = 0;
         currentFrame = UP.getKeyFrame(0);
         playerLocation = new Location(this, 64);
-
-//        stats = new Stats(10, 10, 0.123f);
         stats = new Stats(10, 10, 2.123f);
     }
 
@@ -71,10 +67,10 @@ public class Player extends Rectangle {
             checkInteraction = true;
     }
 
-    public void update(Level level) {
+    public void update() {
         updateTextureRegion();
-        moveAndCollide(level);
-        interact(level);
+        moveAndCollide();
+        interact();
     }
 
     private void updateTextureRegion() {
@@ -100,9 +96,9 @@ public class Player extends Rectangle {
         spriteSheet.dispose();
     }
 
-    private void moveAndCollide(Level level) {
+    private void moveAndCollide() {
         x += velX;
-        String[][] tileMap = level.getTileMap();
+        String[][] tileMap = Level.getTileMap();
         int blockWidth = 64;
         int mapWidth = tileMap[0].length * blockWidth;
         if (x < 0 || x > mapWidth - width)
@@ -118,18 +114,21 @@ public class Player extends Rectangle {
             else if (Level.NPC.contains(tileMap[rowBottom][col]) || Level.NPC.contains(tileMap[rowTop][col]))
                 x -= velX;
             else if (Level.ENEMY.contains(tileMap[rowBottom][col]) || Level.ENEMY.contains(tileMap[rowTop][col])) {
-                if (level.getEnemies().first().isAlive())
-                    game.setScreen(new TransitionScreen(game, new Battle(this, level.getEnemies().first(), game, engine)));
+                String enemyCode = tileMap[rowBottom][col];
+                if(Level.ENEMY.contains(tileMap[rowTop][col]))
+                    enemyCode = tileMap[rowTop][col];
+                Enemy enemy = (Enemy) Level.getObject(enemyCode);
+                if (enemy.isAlive())
+                    game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
             }
             else if (Level.DOOR.contains(tileMap[rowBottom][col]) || Level.DOOR.contains(tileMap[rowTop][col])){
-                String nextLevel = level.getObjectVariables().get(tileMap[rowBottom][col]);
-                if(nextLevel == null)
-                    nextLevel = level.getObjectVariables().get(tileMap[rowTop][col]);
-                if(nextLevel == null) return;
-                String[] doorDetails = nextLevel.split("\\s");
-                x = Integer.parseInt(doorDetails[1]);
-                y = Integer.parseInt(doorDetails[2]);
-                level.changeLevel(doorDetails[0]);
+                String doorCode = tileMap[rowBottom][col];
+                if(Level.DOOR.contains(tileMap[rowTop][col]))
+                    doorCode = tileMap[rowTop][col];
+                Door door = (Door) Level.getObject(doorCode);
+                door.activate(Level.getObjectVariables().get(doorCode));
+                x = door.getPlayerPosX();
+                y = door.getPlayerPosY();
             }
         }
 
@@ -145,46 +144,48 @@ public class Player extends Rectangle {
             else if (Level.NPC.contains(tileMap[row][leftCol]) || Level.NPC.contains(tileMap[row][rightCol]))
                 y -= velY;
             else if (Level.ENEMY.contains(tileMap[row][leftCol]) || Level.ENEMY.contains(tileMap[row][rightCol])) {
-                if (level.getEnemies().first().isAlive())
-                    game.setScreen(new TransitionScreen(game, new Battle(this, level.getEnemies().first(), game, engine)));
+                String enemyCode = tileMap[row][leftCol];
+                if(Level.ENEMY.contains(tileMap[row][rightCol]))
+                    enemyCode = tileMap[row][rightCol];
+                Enemy enemy = (Enemy) Level.getObject(enemyCode);
+                if (enemy.isAlive())
+                    game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
             }
             else if (Level.DOOR.contains(tileMap[row][leftCol]) || Level.DOOR.contains(tileMap[row][rightCol])){
-                String nextLevel = level.getObjectVariables().get(tileMap[row][leftCol]);
-                if(nextLevel == null)
-                    nextLevel = level.getObjectVariables().get(tileMap[row][rightCol]);
-                if(nextLevel == null) return;
-                String[] doorDetails = nextLevel.split("\\s");
-                x = Integer.parseInt(doorDetails[1]);
-                y = Integer.parseInt(doorDetails[2]);
-                level.changeLevel(doorDetails[0]);
+                String doorCode = tileMap[row][leftCol];
+                if(Level.DOOR.contains(tileMap[row][rightCol]))
+                    doorCode = tileMap[row][rightCol];
+                Door door = (Door) Level.getObject(doorCode);
+                door.activate(Level.getObjectVariables().get(doorCode));
+                x = door.getPlayerPosX();
+                y = door.getPlayerPosY();
             }
         }
     }
 
-    private void interact(Level level) {
+    private void interact() {
         playerLocation.update(this);
         // TODO Interact with every direction.
         if (checkInteraction || interacting) {
-            Array<NPC> tmp = level.getNpcs();
-            int blockWidth = 64;
-            for (NPC npc : tmp) {
-                int npcRow = (int) Math.floor(npc.y / blockWidth);
-                int npcCol = (int) Math.floor(npc.x / blockWidth);
-                if (playerLocation.bottom == npcRow - 1 && (playerLocation.left == npcCol || playerLocation.right == npcCol)){
-                    if (interacting) {
-                        // Update interaction status.
-                        interacting = npc.talking();
-                    } else {
-                        // Start interacting.
-                        velX = 0;
-                        velY = 0;
-                        npc.talk();
-                        interacting = npc.talking();
-                    }
-                    break;
+            String npcCode = null;
+            if(Level.NPC.contains(Level.getTileMap()[playerLocation.bottom+1][playerLocation.left]))
+                npcCode = Level.getTileMap()[playerLocation.bottom+1][playerLocation.left];
+            else if(Level.NPC.contains(Level.getTileMap()[playerLocation.bottom+1][playerLocation.right]))
+                npcCode = Level.getTileMap()[playerLocation.bottom+1][playerLocation.right];
+            if(npcCode != null) {
+                NPC npc = (NPC) Level.getObject(npcCode);
+                if (interacting) {
+                    // Update interaction status.
+                    interacting = npc.talking();
+                } else {
+                    // Start interacting.
+                    velX = 0;
+                    velY = 0;
+                    npc.talk();
+                    interacting = npc.talking();
                 }
             }
-            checkInteraction = false;
+                checkInteraction = false;
         }
     }
 
