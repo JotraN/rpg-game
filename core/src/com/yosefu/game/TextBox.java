@@ -21,6 +21,7 @@ public class TextBox {
     private float border = 4;
     private boolean finished = false;
     private boolean nextBox = false;
+    private Color textColor = new Color(0.2f, 0.3f, 0.2f, 1.0f);
 
     public TextBox(String text) {
         x = 450;
@@ -41,7 +42,8 @@ public class TextBox {
     }
 
     private void setup(){
-        lines = text.split("\\n");
+        // TODO Split text based on length
+        lines = text.split("\\\\n");
         linesDrawn.addAll(Arrays.asList(lines));
     }
 
@@ -49,9 +51,9 @@ public class TextBox {
         if(!finished) {
             shapeRenderer.setProjectionMatrix(camera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(0.1f, 0.1f, 0.1f, 0.1f);
+            shapeRenderer.setColor(0.41f, 0.51f, 0.36f, 1.0f);
             shapeRenderer.rect(x, y, width, height);
-            shapeRenderer.setColor(0.9f, 0.9f, 0.9f, 0.1f);
+            shapeRenderer.setColor(0.99f, 1.0f, 0.99f, 1.0f);
             shapeRenderer.rect(x + border, y + border, width - border*2, height - border*2);
             shapeRenderer.end();
 
@@ -60,8 +62,9 @@ public class TextBox {
             target.setProjectionMatrix(camera.combined);
             target.begin();
             int pos = 0;
+            font.setScale(1);
             for(int i = 0; i < lines.length; i++){
-                font.setColor(Color.BLACK);
+                font.setColor(textColor);
                 font.draw(target, lines[i], textX, textY);
                 textY -= 15;
                 boolean boxFull = textY <= y + border*2;
@@ -94,7 +97,7 @@ public class TextBox {
 
     public void reset(){
         finished = false;
-        lines = text.split("\\n");
+        lines = text.split("\\\\n");
         linesDrawn.clear();
         linesDrawn.addAll(Arrays.asList(lines));
     }

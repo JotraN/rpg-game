@@ -13,18 +13,20 @@ public class NPC extends Rectangle {
     private TextBox textBox;
     private boolean talking = false;
 
-    public NPC(float x, float y, String text) {
+    public NPC(float x, float y, String textureLocation, String text) {
         this.x = x;
         this.y = y;
-        this.width = 256;
-        this.height = 256;
+        this.width = 64;
+        this.height = 64;
         textBox = new TextBox(text);
 
         Texture spriteSheet;
-        spriteSheet = new Texture(Gdx.files.internal("playersheet.png"));
-        int rows = 4, columns = 4;
+        spriteSheet = new Texture(Gdx.files.internal("npc/" + textureLocation));
+        int rows = 1, columns = 1;
         TextureRegion[][] frames = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / columns, spriteSheet.getHeight() / rows);
-        currentFrame = frames[1][0];
+        // Center texture.
+        this.x += (this.width - spriteSheet.getWidth()/columns)/2;
+        currentFrame = frames[0][0];
     }
 
     public void draw(SpriteBatch batch, BitmapFont font, SpriteBatch staticBatch, OrthographicCamera camera) {
@@ -38,7 +40,7 @@ public class NPC extends Rectangle {
 
     public void update(){
         if(talking)
-             textBox.processEvents();
+            textBox.processEvents();
         if(textBox.isFinished())
             talking = false;
     }

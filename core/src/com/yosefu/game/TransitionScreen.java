@@ -1,6 +1,8 @@
 package com.yosefu.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Timer;
 
@@ -8,23 +10,24 @@ public class TransitionScreen implements Screen {
     private final Yosefu game;
     private ShapeRenderer shapeRenderer;
     private Timer timer;
-    private float color = 0.5f;
-    private float increment = -0.1f;
+    private int time = 0;
+    private Color color;
+    private float increment = 1;
     private Screen nextScreen;
 
     public TransitionScreen(Yosefu game, Screen nextScreen) {
         this.game = game;
         this.nextScreen = nextScreen;
         shapeRenderer = new ShapeRenderer();
+        color = new Color(0, 0.1f, 0, 1);
         timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
-                if (color > 0.5f) {
+                if (time > 10) {
                     timer.stop();
                 }
-                if (color < 0) increment = -increment;
-                color += increment;
+                time += increment;
             }
         }, 0.025f, 0.025f);
         timer.start();
@@ -32,12 +35,11 @@ public class TransitionScreen implements Screen {
 
     @Override
     public void render(float delta) {
-//        shapeRenderer.setProjectionMatrix(game.staticCamera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(color, color, color, 1.0f);
-//        shapeRenderer.rect(0, 0, game.staticCamera.viewportWidth, game.staticCamera.viewportHeight);
+        shapeRenderer.setColor(color);
+        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapeRenderer.end();
-        if(color > 0.5f) {
+        if(time > 10) {
             this.dispose();
             game.setScreen(nextScreen);
         }

@@ -10,8 +10,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Player extends Rectangle {
+    private final Yosefu game;
+    private final Engine engine;
     private float velX = 0, velY = 0;
-    private final float SPEED = 10;
+    private final float SPEED = 6;
     private Texture spriteSheet;
     private TextureRegion currentFrame;
     private final Animation STANDING;
@@ -22,23 +24,29 @@ public class Player extends Rectangle {
     private boolean checkInteraction = false;
     private boolean interacting = false;
     private Location playerLocation;
+    private Stats stats;
 
-    public Player() {
-        x = 256;
-        y = 256;
-        width = 176;
-        height = 240;
+    public Player(Yosefu game, Engine engine) {
+        this.game = game;
+        this.engine = engine;
+        x = 320;
+        y = 64;
+        width = 46;
+        height = 62;
 
         spriteSheet = new Texture(Gdx.files.internal("playersheet.png"));
         int rows = 4, columns = 4;
         TextureRegion[][] frames = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / columns, spriteSheet.getHeight() / rows);
-        LEFTRIGHT = new Animation(0.05f, frames[0]);
+        LEFTRIGHT = new Animation(0.1f, frames[0]);
         STANDING = new Animation(0.1f, frames[1]);
-        UP = new Animation(0.05f, frames[2]);
-        DOWN = new Animation(0.05f, frames[3]);
+        DOWN = new Animation(0.1f, frames[2]);
+        UP = new Animation(0.1f, frames[3]);
         stateTime = 0;
+        currentFrame = UP.getKeyFrame(0);
+        playerLocation = new Location(this, 64);
 
-        playerLocation = new Location(this, 256);
+//        stats = new Stats(10, 10, 0.123f);
+        stats = new Stats(10, 10, 2.123f);
     }
 
     public void draw(Yosefu game) {
@@ -71,6 +79,11 @@ public class Player extends Rectangle {
 
     private void updateTextureRegion() {
         stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion original;
+        if(currentFrame != null)
+            original = currentFrame;
+        else
+            original = DOWN.getKeyFrame(0);
         currentFrame = LEFTRIGHT.getKeyFrame(stateTime, true);
         if (velY > 0) currentFrame = UP.getKeyFrame(stateTime, true);
         else if (velY < 0) currentFrame = DOWN.getKeyFrame(stateTime, true);
@@ -80,7 +93,7 @@ public class Player extends Rectangle {
         } else if (velX < 0) {
             if (!currentFrame.isFlipX())
                 currentFrame.flip(true, false);
-        } else currentFrame = STANDING.getKeyFrame(stateTime, true);
+        } else currentFrame = original;
     }
 
     public void dispose() {
@@ -90,7 +103,7 @@ public class Player extends Rectangle {
     private void moveAndCollide(Level level) {
         x += velX;
         String[][] tileMap = level.getTileMap();
-        int blockWidth = 256;
+        int blockWidth = 64;
         int mapWidth = tileMap[0].length * blockWidth;
         if (x < 0 || x > mapWidth - width)
             x -= velX;
@@ -102,12 +115,21 @@ public class Player extends Rectangle {
         if (!tileMap[rowBottom][col].equals(Level.EMPTY) || !tileMap[rowTop][col].equals(Level.EMPTY)) {
             if (tileMap[rowBottom][col].equals(Level.WALL) || tileMap[rowTop][col].equals(Level.WALL))
                 x -= velX;
-            else if (tileMap[rowBottom][col].equals(Level.NPC) || tileMap[rowTop][col].equals(Level.NPC))
+            else if (Level.NPC.contains(tileMap[rowBottom][col]) || Level.NPC.contains(tileMap[rowTop][col]))
                 x -= velX;
-            else if (tileMap[rowBottom][col].equals(Level.DOOR) || tileMap[rowTop][col].equals(Level.DOOR)) {
-                x = 256;
-                y = 256;
-                level.changeLevel();
+            else if (Level.ENEMY.contains(tileMap[rowBottom][col]) || Level.ENEMY.contains(tileMap[rowTop][col])) {
+                if (level.getEnemies().first().isAlive())
+                    game.setScreen(new TransitionScreen(game, new Battle(this, level.getEnemies().first(), game, engine)));
+            }
+            else if (Level.DOOR.contains(tileMap[rowBottom][col]) || Level.DOOR.contains(tileMap[rowTop][col])){
+                String nextLevel = level.getObjectVariables().get(tileMap[rowBottom][col]);
+                if(nextLevel == null)
+                    nextLevel = level.getObjectVariables().get(tileMap[rowTop][col]);
+                if(nextLevel == null) return;
+                String[] doorDetails = nextLevel.split("\\s");
+                x = Integer.parseInt(doorDetails[1]);
+                y = Integer.parseInt(doorDetails[2]);
+                level.changeLevel(doorDetails[0]);
             }
         }
 
@@ -120,12 +142,21 @@ public class Player extends Rectangle {
         if (!tileMap[row][leftCol].equals(Level.EMPTY) || !tileMap[row][rightCol].equals(Level.EMPTY)) {
             if (tileMap[row][leftCol].equals(Level.WALL) || tileMap[row][rightCol].equals(Level.WALL))
                 y -= velY;
-            else if (tileMap[row][leftCol].equals(Level.NPC) || tileMap[row][rightCol].equals(Level.NPC))
+            else if (Level.NPC.contains(tileMap[row][leftCol]) || Level.NPC.contains(tileMap[row][rightCol]))
                 y -= velY;
-            else if (tileMap[row][leftCol].equals(Level.DOOR) || tileMap[row][rightCol].equals(Level.DOOR)) {
-                x = 256;
-                y = 256;
-                level.changeLevel();
+            else if (Level.ENEMY.contains(tileMap[row][leftCol]) || Level.ENEMY.contains(tileMap[row][rightCol])) {
+                if (level.getEnemies().first().isAlive())
+                    game.setScreen(new TransitionScreen(game, new Battle(this, level.getEnemies().first(), game, engine)));
+            }
+            else if (Level.DOOR.contains(tileMap[row][leftCol]) || Level.DOOR.contains(tileMap[row][rightCol])){
+                String nextLevel = level.getObjectVariables().get(tileMap[row][leftCol]);
+                if(nextLevel == null)
+                    nextLevel = level.getObjectVariables().get(tileMap[row][rightCol]);
+                if(nextLevel == null) return;
+                String[] doorDetails = nextLevel.split("\\s");
+                x = Integer.parseInt(doorDetails[1]);
+                y = Integer.parseInt(doorDetails[2]);
+                level.changeLevel(doorDetails[0]);
             }
         }
     }
@@ -134,18 +165,15 @@ public class Player extends Rectangle {
         playerLocation.update(this);
         // TODO Interact with every direction.
         if (checkInteraction || interacting) {
-            int row = playerLocation.bottom;
-            int col = playerLocation.left;
             Array<NPC> tmp = level.getNpcs();
-            int blockWidth = 256;
+            int blockWidth = 64;
             for (NPC npc : tmp) {
                 int npcRow = (int) Math.floor(npc.y / blockWidth);
                 int npcCol = (int) Math.floor(npc.x / blockWidth);
-                if (row == npcRow - 1 && col == npcCol){
+                if (playerLocation.bottom == npcRow - 1 && (playerLocation.left == npcCol || playerLocation.right == npcCol)){
                     if (interacting) {
                         // Update interaction status.
                         interacting = npc.talking();
-                        return;
                     } else {
                         // Start interacting.
                         velX = 0;
@@ -155,9 +183,16 @@ public class Player extends Rectangle {
                     }
                     break;
                 }
-                interacting = false;
             }
             checkInteraction = false;
         }
+    }
+
+    public Stats getStats(){
+        return stats;
+    }
+
+    public TextureRegion getTexture(){
+        return LEFTRIGHT.getKeyFrame(0);
     }
 }

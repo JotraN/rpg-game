@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 public class Block extends Rectangle {
     protected Color color;
     public static final Color WALL = new Color(0.3f, 0.3f, 0.3f, 1);
-    public static final Color DOOR = new Color(0.5f, 0.4f, 0.3f, 1);
+    public static final Color DOOR = new Color(0.0f, 0.15f, 0.0f, 1);
 
     public Block(float x, float y, float width, float height, Color color) {
         this.x = x;
