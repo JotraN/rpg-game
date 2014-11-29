@@ -3,7 +3,6 @@ package com.yosefu.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -33,19 +32,19 @@ public class TextBox {
         setup();
     }
 
-    private void setup(){
+    private void setup() {
         // TODO Split text based on length
         lines = text.split("\\\\n");
         linesDrawn.addAll(Arrays.asList(lines));
     }
 
-    public void draw(BitmapFont font, SpriteBatch target){
-        if(!finished) {
+    public void draw(BitmapFont font, SpriteBatch target) {
+        if (!finished) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(0.41f, 0.51f, 0.36f, 1.0f);
             shapeRenderer.rect(x, y, width, height);
             shapeRenderer.setColor(0.99f, 1.0f, 0.99f, 1.0f);
-            shapeRenderer.rect(x + border, y + border, width - border*2, height - border*2);
+            shapeRenderer.rect(x + border, y + border, width - border * 2, height - border * 2);
             shapeRenderer.end();
 
             int textX = (int) (x + 8);
@@ -53,29 +52,29 @@ public class TextBox {
             target.begin();
             int pos = 0;
             font.setScale(1);
-            for(int i = 0; i < lines.length; i++){
+            for (int i = 0; i < lines.length; i++) {
                 font.setColor(textColor);
                 font.draw(target, lines[i], textX, textY);
                 textY -= 15;
-                boolean boxFull = textY <= y + border*2;
+                boolean boxFull = textY <= y + border * 2;
                 if (boxFull) {
                     pos = i;
                     break;
                 }
             }
-            if(!nextBox) {
+            if (!nextBox) {
                 linesDrawn = new ArrayList<String>(linesDrawn.subList(pos, linesDrawn.size()));
                 nextBox = true;
-                if(pos == 0)
+                if (pos == 0)
                     linesDrawn.clear();
             }
             target.end();
         }
     }
 
-    public void processEvents(){
-        if(Gdx.input.isKeyJustPressed(Input.Keys.O)){
-            if(!finished) {
+    public void processEvents() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            if (!finished) {
                 if (linesDrawn.isEmpty())
                     finished = true;
                 if (nextBox)
@@ -85,14 +84,14 @@ public class TextBox {
         }
     }
 
-    public void reset(){
+    public void reset() {
         finished = false;
         lines = text.split("\\\\n");
         linesDrawn.clear();
         linesDrawn.addAll(Arrays.asList(lines));
     }
 
-    public boolean isFinished(){
+    public boolean isFinished() {
         return finished;
     }
 }

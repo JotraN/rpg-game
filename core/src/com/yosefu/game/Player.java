@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 
 public class Player extends Rectangle {
     private final Yosefu game;
@@ -76,7 +75,7 @@ public class Player extends Rectangle {
     private void updateTextureRegion() {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion original;
-        if(currentFrame != null)
+        if (currentFrame != null)
             original = currentFrame;
         else
             original = DOWN.getKeyFrame(0);
@@ -115,15 +114,14 @@ public class Player extends Rectangle {
                 x -= velX;
             else if (Level.ENEMY.contains(tileMap[rowBottom][col]) || Level.ENEMY.contains(tileMap[rowTop][col])) {
                 String enemyCode = tileMap[rowBottom][col];
-                if(Level.ENEMY.contains(tileMap[rowTop][col]))
+                if (Level.ENEMY.contains(tileMap[rowTop][col]))
                     enemyCode = tileMap[rowTop][col];
                 Enemy enemy = (Enemy) Level.getObject(enemyCode);
                 if (enemy.isAlive())
                     game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
-            }
-            else if (Level.DOOR.contains(tileMap[rowBottom][col]) || Level.DOOR.contains(tileMap[rowTop][col])){
+            } else if (Level.DOOR.contains(tileMap[rowBottom][col]) || Level.DOOR.contains(tileMap[rowTop][col])) {
                 String doorCode = tileMap[rowBottom][col];
-                if(Level.DOOR.contains(tileMap[rowTop][col]))
+                if (Level.DOOR.contains(tileMap[rowTop][col]))
                     doorCode = tileMap[rowTop][col];
                 Door door = (Door) Level.getObject(doorCode);
                 door.activate(Level.getObjectVariables().get(doorCode));
@@ -145,15 +143,14 @@ public class Player extends Rectangle {
                 y -= velY;
             else if (Level.ENEMY.contains(tileMap[row][leftCol]) || Level.ENEMY.contains(tileMap[row][rightCol])) {
                 String enemyCode = tileMap[row][leftCol];
-                if(Level.ENEMY.contains(tileMap[row][rightCol]))
+                if (Level.ENEMY.contains(tileMap[row][rightCol]))
                     enemyCode = tileMap[row][rightCol];
                 Enemy enemy = (Enemy) Level.getObject(enemyCode);
                 if (enemy.isAlive())
                     game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
-            }
-            else if (Level.DOOR.contains(tileMap[row][leftCol]) || Level.DOOR.contains(tileMap[row][rightCol])){
+            } else if (Level.DOOR.contains(tileMap[row][leftCol]) || Level.DOOR.contains(tileMap[row][rightCol])) {
                 String doorCode = tileMap[row][leftCol];
-                if(Level.DOOR.contains(tileMap[row][rightCol]))
+                if (Level.DOOR.contains(tileMap[row][rightCol]))
                     doorCode = tileMap[row][rightCol];
                 Door door = (Door) Level.getObject(doorCode);
                 door.activate(Level.getObjectVariables().get(doorCode));
@@ -168,11 +165,11 @@ public class Player extends Rectangle {
         // TODO Interact with every direction.
         if (checkInteraction || interacting) {
             String npcCode = null;
-            if(Level.NPC.contains(Level.getTileMap()[playerLocation.bottom+1][playerLocation.left]))
-                npcCode = Level.getTileMap()[playerLocation.bottom+1][playerLocation.left];
-            else if(Level.NPC.contains(Level.getTileMap()[playerLocation.bottom+1][playerLocation.right]))
-                npcCode = Level.getTileMap()[playerLocation.bottom+1][playerLocation.right];
-            if(npcCode != null) {
+            if (Level.NPC.contains(Level.getTileMap()[playerLocation.bottom + 1][playerLocation.left]))
+                npcCode = Level.getTileMap()[playerLocation.bottom + 1][playerLocation.left];
+            else if (Level.NPC.contains(Level.getTileMap()[playerLocation.bottom + 1][playerLocation.right]))
+                npcCode = Level.getTileMap()[playerLocation.bottom + 1][playerLocation.right];
+            if (npcCode != null) {
                 NPC npc = (NPC) Level.getObject(npcCode);
                 if (interacting) {
                     // Update interaction status.
@@ -185,15 +182,15 @@ public class Player extends Rectangle {
                     interacting = npc.talking();
                 }
             }
-                checkInteraction = false;
+            checkInteraction = false;
         }
     }
 
-    public Stats getStats(){
+    public Stats getStats() {
         return stats;
     }
 
-    public TextureRegion getTexture(){
+    public TextureRegion getTexture() {
         return LEFTRIGHT.getKeyFrame(0);
     }
 }

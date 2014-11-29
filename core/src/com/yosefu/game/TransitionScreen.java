@@ -39,7 +39,7 @@ public class TransitionScreen implements Screen {
         shapeRenderer.setColor(color);
         shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shapeRenderer.end();
-        if(time > 10) {
+        if (time > 10) {
             this.dispose();
             game.setScreen(nextScreen);
         }

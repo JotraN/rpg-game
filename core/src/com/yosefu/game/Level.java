@@ -4,13 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
-
-import sun.org.mozilla.javascript.internal.ast.Block;
 
 public class Level {
     private final Yosefu game;
@@ -118,11 +113,11 @@ public class Level {
         return tileMap;
     }
 
-    public static HashMap<String, String> getObjectVariables(){
+    public static HashMap<String, String> getObjectVariables() {
         return objectVariables;
     }
 
-    public static Interactive getObject(String key){
+    public static Interactive getObject(String key) {
         return objects.get(key);
     }
 }

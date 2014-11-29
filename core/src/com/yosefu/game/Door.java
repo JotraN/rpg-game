@@ -1,13 +1,10 @@
 package com.yosefu.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 
 public class Door extends Interactive {
     private final Level level;
@@ -39,18 +36,18 @@ public class Door extends Interactive {
     public void update() {
     }
 
-    public void activate(String details){
+    public void activate(String details) {
         String[] doorDetails = details.split("\\s");
         playerPosX = Integer.parseInt(doorDetails[1]);
         playerPosY = Integer.parseInt(doorDetails[2]);
         level.changeLevel(doorDetails[0]);
     }
 
-    public int getPlayerPosX(){
+    public int getPlayerPosX() {
         return playerPosX;
     }
 
-    public int getPlayerPosY(){
+    public int getPlayerPosY() {
         return playerPosY;
     }
 }

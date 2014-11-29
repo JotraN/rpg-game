@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Enemy extends Interactive{
+public class Enemy extends Interactive {
     private boolean alive = true;
     private Stats stats;
     private String levelAction = null;
 
-    public Enemy(float x, float y, String variables){
+    public Enemy(float x, float y, String variables) {
         stats = new Stats(10, 10, 0.01f);
         this.x = x;
         this.y = y;
@@ -19,7 +19,7 @@ public class Enemy extends Interactive{
         this.height = 64;
         Texture spriteSheet;
         String[] enemyVariables = variables.split(" ");
-        if(variables.contains("#")) {
+        if (variables.contains("#")) {
             enemyVariables = variables.substring(0, variables.indexOf('#')).split(" ");
             levelAction = variables.substring(variables.indexOf('#') + 1);
         }
@@ -28,33 +28,33 @@ public class Enemy extends Interactive{
         int rows = 1, columns = 1;
         TextureRegion[][] frames = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / columns, spriteSheet.getHeight() / rows);
         // Center texture.
-        this.x += (this.width - spriteSheet.getWidth()/columns)/2;
+        this.x += (this.width - spriteSheet.getWidth() / columns) / 2;
         currentFrame = frames[0][0];
     }
 
-    public Stats getStats(){
+    public Stats getStats() {
         return stats;
     }
 
-    public boolean isAlive(){
+    public boolean isAlive() {
         return alive;
     }
 
-    public void kill(){
+    public void kill() {
         alive = false;
-        if(levelAction != null) {
+        if (levelAction != null) {
             Level.getObjectVariables().remove(levelAction.substring(0, 1));
             Level.getObjectVariables().put(levelAction.substring(0, 1), levelAction.substring(2));
         }
     }
 
-    public TextureRegion getTexture(){
+    public TextureRegion getTexture() {
         return currentFrame;
     }
 
     @Override
     public void draw(SpriteBatch batch, BitmapFont font, SpriteBatch staticBatch) {
-        if(alive) {
+        if (alive) {
             batch.begin();
             batch.draw(currentFrame, x, y);
             batch.end();

@@ -14,7 +14,7 @@ public class Battle implements Screen {
     private final Screen screen;
     private final Player player;
     private final Enemy enemy;
-//    private Array<Enemy> enemies;
+    //    private Array<Enemy> enemies;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private Texture bg;
@@ -38,8 +38,8 @@ public class Battle implements Screen {
 
     @Override
     public void render(float delta) {
-        if(player.getStats().getHealth() < 0) return;
-        if(enemy.getStats().getHealth() < 0) {
+        if (player.getStats().getHealth() < 0) return;
+        if (enemy.getStats().getHealth() < 0) {
             enemy.kill();
             game.setScreen(new TransitionScreen(game, screen));
         }
@@ -81,9 +81,9 @@ public class Battle implements Screen {
         // Draw text options.
         int padding = 15;
         y += height;
-        for(int i = 0; i < textOptions.length; i++){
+        for (int i = 0; i < textOptions.length; i++) {
             game.font.setColor(textColor);
-            if(current == i)
+            if (current == i)
                 game.font.setColor(highlightColor);
             game.font.draw(game.batch, textOptions[i], x + padding, y - padding);
             y -= padding;
@@ -96,17 +96,16 @@ public class Battle implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.W) || Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             if (current == 0) return;
             current--;
-        }
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed((Input.Keys.DOWN))) {
-            if(current == textOptions.length - 1) return;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.S) || Gdx.input.isKeyJustPressed((Input.Keys.DOWN))) {
+            if (current == textOptions.length - 1) return;
             current++;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.O))
             act();
     }
 
-    private void act(){
-        switch (current){
+    private void act() {
+        switch (current) {
             case 0:
                 enemy.getStats().setHealth(enemy.getStats().getHealth() - player.getStats().getAtk());
                 player.getStats().setHealth(player.getStats().getHealth() - enemy.getStats().getAtk());

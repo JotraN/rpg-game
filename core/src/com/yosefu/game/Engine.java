@@ -1,11 +1,9 @@
 package com.yosefu.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Engine implements Screen {
     private final Yosefu game;
@@ -26,7 +24,7 @@ public class Engine implements Screen {
         Gdx.gl.glClearColor(0.0f, 0.1f, 0.0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.position.set(player.x + player.width/2, player.y + 250, 0);
+        camera.position.set(player.x + player.width / 2, player.y + 250, 0);
         camera.update();
 
         level.update(camera);
