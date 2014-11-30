@@ -1,5 +1,5 @@
 A:oldman.png#Hello adventurer.\nThe world needs you.\nYou're the hero.\nSave the world from evil.\nBut do it with good.
-a:map_02 128 64
+a:map_02 256 64
 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 

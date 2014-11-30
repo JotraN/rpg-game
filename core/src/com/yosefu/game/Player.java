@@ -39,7 +39,6 @@ public class Player extends Rectangle {
         DOWN = new Animation(0.1f, frames[1]);
         UP = new Animation(0.1f, frames[2]);
         stateTime = 0;
-        currentFrame = UP.getKeyFrame(0);
         playerLocation = new Location(this, 64);
         stats = new Stats(10, 10, 2.123f);
     }
