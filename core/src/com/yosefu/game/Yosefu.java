@@ -29,7 +29,8 @@ public class Yosefu extends Game {
         font = generator.generateFont(parameter);
         generator.dispose();
 
-        this.setScreen(new Engine(this));
+//        this.setScreen(new Engine(this));
+        this.setScreen(new MainMenu(this));
     }
 
     @Override
