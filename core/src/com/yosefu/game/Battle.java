@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Battle implements Screen {
@@ -17,15 +18,18 @@ public class Battle implements Screen {
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
     private Texture bg;
+    private TextureRegion playerTexture, enemyTexture;
     private Color textColor = new Color(0.2f, 0.3f, 0.2f, 1.0f);
     private Color highlightColor = new Color(0.6f, 0.7f, 0.6f, 1.0f);
     private String[] textOptions = {
             "attack", "defend", "talk", "run"
     };
     private int selection = 0;
-    private boolean attacking = false, playerAttacking = false;
+    private boolean attacking = false, running = false;
+    private boolean playerAnimating = false;
     private int playerX = 300, playerY = 340, enemyX = 900, enemyY = 340;
-    private int velY = 5;
+    private int groundHeight = 340, groundEdge = 250;
+    private int speed = 5;
 
     public Battle(Player player, Enemy enemy, Yosefu game, Screen screen) {
         this.player = player;
@@ -36,6 +40,8 @@ public class Battle implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         bg = new Texture(Gdx.files.internal("battlebg.png"));
+        playerTexture = player.getTexture();
+        enemyTexture = enemy.getTexture();
     }
 
     @Override
@@ -49,6 +55,8 @@ public class Battle implements Screen {
         draw();
         if(attacking)
             animateAttack();
+        else if(running)
+            animateRun();
         else
             processEvents();
     }
@@ -62,10 +70,10 @@ public class Battle implements Screen {
         game.font.setColor(highlightColor);
         game.font.setScale(1);
         game.batch.draw(bg, 0, 0);
-        game.batch.draw(player.getTexture(), playerX, playerY);
-        game.font.draw(game.batch, "hp: " + player.getStats().health, 300, 340 + player.height + 25);
-        game.batch.draw(enemy.getTexture(), enemyX, enemyY);
-        game.font.draw(game.batch, "hp: " + enemy.getStats().health, 900, 340 + enemy.height + 25);
+        game.batch.draw(playerTexture, playerX, playerY);
+        game.font.draw(game.batch, "hp: " + player.getStats().health, 300, groundHeight + player.height + 25);
+        game.batch.draw(enemyTexture, enemyX, enemyY);
+        game.font.draw(game.batch, "hp: " + enemy.getStats().health, 900, groundHeight + enemy.height + 25);
         game.batch.end();
 
         int x = 50;
@@ -112,38 +120,57 @@ public class Battle implements Screen {
         switch (selection) {
             case 0:
                 attacking = true;
-                playerAttacking = true;
+                playerAnimating = true;
                 break;
+            case 3:
+                running = true;
+                playerAnimating = true;
+                playerTexture.flip(true, false);
+                break;
+
             default:
                 break;
         }
     }
 
     private void animateAttack(){
-        if(playerAttacking) {
-            playerY += velY;
-            if (playerY > 360)
-                velY = -velY;
-            if (playerY < 340) {
-                playerY = 340;
-                playerAttacking = false;
-                velY = -velY;
+        int maxHeight = groundHeight + 20;
+        if(playerAnimating) {
+            playerY += speed;
+            if (playerY > maxHeight)
+                speed = -speed;
+            if (playerY < groundHeight) {
+                playerY = groundHeight;
+                playerAnimating = false;
+                speed = -speed;
                 enemy.getStats().health -= player.getStats().atk;
             }
         } else{
             // Animate enemy attack.
-            enemyY += velY;
-            if (enemyY > 360)
-                velY = -velY;
-            if (enemyY < 340) {
-                enemyY = 340;
+            enemyY += speed;
+            if (enemyY > maxHeight)
+                speed = -speed;
+            if (enemyY < groundHeight) {
+                enemyY = groundHeight;
                 attacking = false;
-                velY = -velY;
+                speed = -speed;
                 player.getStats().health -= enemy.getStats().atk;
             }
         }
     }
 
+    private void animateRun(){
+        if(playerAnimating) {
+            playerX -= speed;
+            if (playerX < groundEdge)
+                playerAnimating = false;
+        } else{
+            enemy.getStats().health = enemy.getStats().maxHealth;
+            player.x -= player.getVelX();
+            player.y -= player.getVelY();
+            game.setScreen(new TransitionScreen(game, screen));
+        }
+    }
     @Override
     public void resize(int width, int height) {
 

@@ -11,8 +11,8 @@ import com.badlogic.gdx.math.Rectangle;
 public class Player extends Rectangle {
     private final Yosefu game;
     private final Engine engine;
-    private float velX = 0, velY = 0;
-    private final float SPEED = 6;
+    private int velX = 0, velY = 0;
+    private final int SPEED = 6;
     private final Animation LEFTRIGHT;
     private final Animation UP;
     private final Animation DOWN;
@@ -191,6 +191,17 @@ public class Player extends Rectangle {
     }
 
     public TextureRegion getTexture() {
+        // Flip to face right if facing left.
+        if(LEFTRIGHT.getKeyFrame(0).isFlipX())
+            LEFTRIGHT.getKeyFrame(0).flip(true, false);
         return LEFTRIGHT.getKeyFrame(0);
+    }
+
+    public int getVelX(){
+        return velX;
+    }
+
+    public int getVelY(){
+        return velY;
     }
 }
