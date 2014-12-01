@@ -26,7 +26,7 @@ public class TextBox {
         x = 450;
         y = 10;
         width = 400;
-        height = 150;
+        height = 100;
         this.text = text;
         shapeRenderer = new ShapeRenderer();
         setup();
@@ -46,8 +46,9 @@ public class TextBox {
             shapeRenderer.rect(x + border, y + border, width - border * 2, height - border * 2);
             shapeRenderer.end();
 
-            int textX = (int) (x + 10);
-            int textY = (int) (y + 140);
+            int padding = 14;
+            int textX = (int) (x + padding);
+            int textY = (int) (y + height - padding);
             target.begin();
             int pos = 0;
             font.setScale(1);
@@ -55,7 +56,7 @@ public class TextBox {
                 font.setColor(textColor);
                 font.draw(target, lines[i], textX, textY);
                 textY -= 20;
-                boolean boxFull = textY <= y + border * 2;
+                boolean boxFull = textY <= y + padding;
                 if (boxFull) {
                     pos = ++i;
                     break;
@@ -93,7 +94,7 @@ public class TextBox {
     private void splitText(){
         String tmp = "";
         String[] words = text.split(" ");
-        int lineLength = 30, currLength = lineLength;
+        int lineLength = 27, currLength = lineLength;
         for(int i = 0; i < words.length; i++){
             if(tmp.length() + words[i].length() >= currLength) {
                 tmp += "\\\\n";
