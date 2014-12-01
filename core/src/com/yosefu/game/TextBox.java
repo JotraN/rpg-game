@@ -57,7 +57,7 @@ public class TextBox {
                 textY -= 20;
                 boolean boxFull = textY <= y + border * 2;
                 if (boxFull) {
-                    pos = i;
+                    pos = ++i;
                     break;
                 }
             }
