@@ -40,7 +40,7 @@ public class Player extends Rectangle {
         UP = new Animation(0.1f, frames[2]);
         stateTime = 0;
         playerLocation = new Location(this, 64);
-        stats = new Stats(10, 10, 2.123f);
+        stats = new Stats(10, 10, 3);
     }
 
     public void draw(Yosefu game) {

@@ -47,7 +47,7 @@ public class Battle implements Screen {
     @Override
     public void render(float delta) {
         // TODO Game over.
-        if (player.getStats().health < 0) return;
+        if (player.getStats().health < 0) game.setScreen(new TransitionScreen(game, new MainMenu(game)));
         if (enemy.getStats().health < 0) {
             enemy.kill();
             game.setScreen(new TransitionScreen(game, screen));
@@ -121,6 +121,10 @@ public class Battle implements Screen {
             case 0:
                 attacking = true;
                 playerAnimating = true;
+                break;
+            case 1:
+                break;
+            case 2:
                 break;
             case 3:
                 running = true;

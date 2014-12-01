@@ -12,7 +12,6 @@ public class Enemy extends Interactive {
     private String levelAction = null;
 
     public Enemy(float x, float y, String variables) {
-        stats = new Stats(10, 10, 0.01f);
         this.x = x;
         this.y = y;
         this.width = 64;
@@ -25,6 +24,7 @@ public class Enemy extends Interactive {
         }
 
         spriteSheet = new Texture(Gdx.files.internal("enemy/" + enemyVariables[0]));
+        stats = new Stats(Integer.parseInt(enemyVariables[1]), Integer.parseInt(enemyVariables[2]), Integer.parseInt(enemyVariables[3]));
         int rows = 1, columns = 1;
         TextureRegion[][] frames = TextureRegion.split(spriteSheet, spriteSheet.getWidth() / columns, spriteSheet.getHeight() / rows);
         // Center texture.
