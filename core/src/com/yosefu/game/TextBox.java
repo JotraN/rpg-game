@@ -33,8 +33,7 @@ public class TextBox {
     }
 
     private void setup() {
-        // TODO Split text based on length
-        lines = text.split("\\\\n");
+        splitText();
         linesDrawn.addAll(Arrays.asList(lines));
     }
 
@@ -47,15 +46,15 @@ public class TextBox {
             shapeRenderer.rect(x + border, y + border, width - border * 2, height - border * 2);
             shapeRenderer.end();
 
-            int textX = (int) (x + 8);
-            int textY = (int) (y + 142);
+            int textX = (int) (x + 10);
+            int textY = (int) (y + 140);
             target.begin();
             int pos = 0;
             font.setScale(1);
             for (int i = 0; i < lines.length; i++) {
                 font.setColor(textColor);
                 font.draw(target, lines[i], textX, textY);
-                textY -= 15;
+                textY -= 20;
                 boolean boxFull = textY <= y + border * 2;
                 if (boxFull) {
                     pos = i;
@@ -86,9 +85,24 @@ public class TextBox {
 
     public void reset() {
         finished = false;
-        lines = text.split("\\\\n");
+        splitText();
         linesDrawn.clear();
         linesDrawn.addAll(Arrays.asList(lines));
+    }
+
+    private void splitText(){
+        String tmp = "";
+        String[] words = text.split(" ");
+        int lineLength = 30, currLength = lineLength;
+        for(int i = 0; i < words.length; i++){
+            if(tmp.length() + words[i].length() >= currLength) {
+                tmp += "\\\\n";
+                currLength += lineLength;
+            }
+            tmp += words[i];
+            tmp += ' ';
+        }
+        lines = tmp.split("\\\\n");
     }
 
     public boolean isFinished() {
