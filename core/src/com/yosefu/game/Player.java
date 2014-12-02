@@ -38,6 +38,8 @@ public class Player extends Rectangle {
         LEFTRIGHT = new Animation(0.1f, frames[0]);
         DOWN = new Animation(0.1f, frames[1]);
         UP = new Animation(0.1f, frames[2]);
+        // Set default appearance.
+        currentFrame = UP.getKeyFrame(0);
         stateTime = 0;
         playerLocation = new Location(this, 64);
         stats = new Stats(10, 10, 3);
