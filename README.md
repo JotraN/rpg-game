@@ -1,7 +1,16 @@
 <h1>description</h1>
 Small RPG game built using LibGDX framework.<br>
 Most of the work can be found in:<br>
-<a href="https://github.com/JotraN/yosefu/tree/master/core/src/com/yosefu/game">/core/src/com/yosefu/game</a>
+<a href="https://github.com/JotraN/yosefu/tree/master/core/src/com/yosefu/game">/core/src/com/yosefu/game</a><br>
+
+Screenshots:<br>
+<img src="screenshots/title.png" alt="title" width="480px"/><br>
+<img src="screenshots/battle.png" alt="title" width="480px"/><br>
+
+<h1>installation instructions</h1>
+To play, download <a href="https://github.com/JotraN/yosefu/blob/master/yosefu.jar">yosefu.jar</a> and run it by either double clicking on it or via command line:<br>
+<code>java -jar yosefu.jar</code><br>
+You can also build it yourself by importing the project into your preferred IDE.<br>
 
 <h1>creating a level</h1>
 Level/map files should be created in <a href="https://github.com/JotraN/yosefu/tree/master/core/assets/levels">/core/assets/levels/</a>.<br>
@@ -42,6 +51,7 @@ The rest of the file contains the tile map of the level:
 Still requires a lot of work:
 <ul>
 	<li>A story.</li>
+	<li>More battle options.</li>
 	<li>More content.</li>
 	<li>Inventory system.</li>
 	<li>A save system.</li>
