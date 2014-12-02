@@ -8,7 +8,7 @@ Screenshots:<br>
 <img src="screenshots/battle.png" alt="title" width="480px"/><br>
 
 <h1>installation instructions</h1>
-To play, download <a href="https://github.com/JotraN/yosefu/blob/master/yosefu.jar">yosefu.jar</a> and run it by either double clicking on it or via command line:<br>
+To play, download <a href="https://github.com/JotraN/yosefu/raw/master/yosefu.jar">yosefu.jar</a> and run it by either double clicking on it or via command line:<br>
 <code>java -jar yosefu.jar</code><br>
 You can also build it yourself by importing the project into your preferred IDE.<br>
 
