@@ -12,6 +12,10 @@ To play, download <a href="https://github.com/JotraN/yosefu/raw/master/yosefu.ja
 <code>java -jar yosefu.jar</code><br>
 You can also build it yourself by importing the project into your preferred IDE.<br>
 
+<h1>controls</h1>
+<strong>wasd/arrow</strong> keys are used to move the player.<br>
+<strong>o</strong> is used to interact/select.<br>
+
 <h1>creating a level</h1>
 Level/map files should be created in <a href="https://github.com/JotraN/yosefu/tree/master/core/assets/levels">/core/assets/levels/</a>.<br>
 Some example files can be found there.<br><br>
