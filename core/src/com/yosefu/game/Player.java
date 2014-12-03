@@ -17,6 +17,7 @@ public class Player extends Rectangle {
     private final Animation UP;
     private final Animation DOWN;
     private float stateTime;
+    private boolean collided = false;
     private boolean checkInteraction = false;
     private boolean interacting = false;
     private Texture spriteSheet;
@@ -98,79 +99,55 @@ public class Player extends Rectangle {
 
     private void moveAndCollide() {
         x += velX;
-        String[][] tileMap = Level.getTileMap();
-        int blockWidth = 64;
-        int mapWidth = tileMap[0].length * blockWidth;
-        if (x < 0 || x > mapWidth - width)
-            x -= velX;
         playerLocation.update(this);
-        int col = playerLocation.right;
-        if (velX < 0) col = playerLocation.left;
-        int rowBottom = playerLocation.bottom;
-        int rowTop = playerLocation.top;
-        if (!tileMap[rowBottom][col].equals(Level.EMPTY) || !tileMap[rowTop][col].equals(Level.EMPTY)) {
-            if (tileMap[rowBottom][col].equals(Level.WALL) || tileMap[rowTop][col].equals(Level.WALL))
-                x -= velX;
-            else if (Level.NPC.contains(tileMap[rowBottom][col]) || Level.NPC.contains(tileMap[rowTop][col]))
-                x -= velX;
-            else if (Level.ENEMY.contains(tileMap[rowBottom][col]) || Level.ENEMY.contains(tileMap[rowTop][col])) {
-                String enemyCode = tileMap[rowBottom][col];
-                if (Level.ENEMY.contains(tileMap[rowTop][col]))
-                    enemyCode = tileMap[rowTop][col];
-                Enemy enemy = (Enemy) Level.getObject(enemyCode);
-                if (enemy.isAlive())
-                    game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
-            } else if (Level.DOOR.contains(tileMap[rowBottom][col]) || Level.DOOR.contains(tileMap[rowTop][col])) {
-                String doorCode = tileMap[rowBottom][col];
-                if (Level.DOOR.contains(tileMap[rowTop][col]))
-                    doorCode = tileMap[rowTop][col];
-                Door door = (Door) Level.getObject(doorCode);
-                door.activate(Level.getObjectVariables().get(doorCode));
-                x = door.getPlayerPosX();
-                y = door.getPlayerPosY();
-            }
+        String tileBottom = Level.getTile(playerLocation.bottom, playerLocation.right);
+        String tileTop = Level.getTile(playerLocation.top, playerLocation.right);
+        if (velX < 0) {
+            tileBottom = Level.getTile(playerLocation.bottom, playerLocation.left);
+            tileTop = Level.getTile(playerLocation.top, playerLocation.left);
         }
+        collide(tileBottom, velX, 0);
+        if(!collided) collide(tileTop, velX, 0);
 
         y += velY;
         playerLocation.update(this);
-        int row = playerLocation.top;
-        if (velY < 0) row = playerLocation.bottom;
-        int leftCol = playerLocation.left;
-        int rightCol = playerLocation.right;
-        if (!tileMap[row][leftCol].equals(Level.EMPTY) || !tileMap[row][rightCol].equals(Level.EMPTY)) {
-            if (tileMap[row][leftCol].equals(Level.WALL) || tileMap[row][rightCol].equals(Level.WALL))
-                y -= velY;
-            else if (Level.NPC.contains(tileMap[row][leftCol]) || Level.NPC.contains(tileMap[row][rightCol]))
-                y -= velY;
-            else if (Level.ENEMY.contains(tileMap[row][leftCol]) || Level.ENEMY.contains(tileMap[row][rightCol])) {
-                String enemyCode = tileMap[row][leftCol];
-                if (Level.ENEMY.contains(tileMap[row][rightCol]))
-                    enemyCode = tileMap[row][rightCol];
-                Enemy enemy = (Enemy) Level.getObject(enemyCode);
-                if (enemy.isAlive())
-                    game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
-            } else if (Level.DOOR.contains(tileMap[row][leftCol]) || Level.DOOR.contains(tileMap[row][rightCol])) {
-                String doorCode = tileMap[row][leftCol];
-                if (Level.DOOR.contains(tileMap[row][rightCol]))
-                    doorCode = tileMap[row][rightCol];
-                Door door = (Door) Level.getObject(doorCode);
-                door.activate(Level.getObjectVariables().get(doorCode));
-                x = door.getPlayerPosX();
-                y = door.getPlayerPosY();
-            }
+        String tileRight = Level.getTile(playerLocation.top, playerLocation.right);
+        String tileLeft = Level.getTile(playerLocation.top, playerLocation.left);
+        if (velY < 0) {
+            tileRight = Level.getTile(playerLocation.bottom, playerLocation.right);
+            tileLeft = Level.getTile(playerLocation.bottom, playerLocation.left);
         }
+        collide(tileRight, 0, velY);
+        if(!collided) collide(tileLeft, 0, velY);
+    }
+
+    private void collide(String tile, int moveX, int moveY) {
+        if (tile.equals(Level.EMPTY)){ collided = false; return;}
+        if (tile.equals(Level.WALL)){ x -= moveX; y -= moveY;}
+        else if (Level.NPC.contains(tile)){ x -= moveX; y -= moveY;}
+        else if (Level.ENEMY.contains(tile)) {
+            Enemy enemy = (Enemy) Level.getObject(tile);
+            if (enemy.isAlive())
+                game.setScreen(new TransitionScreen(game, new Battle(this, enemy, game, engine)));
+        } else if (Level.DOOR.contains(tile)) {
+            Door door = (Door) Level.getObject(tile);
+            door.activate(Level.getObjectVariables().get(tile));
+            x = door.getPlayerPosX();
+            y = door.getPlayerPosY();
+        }
+        collided = true;
     }
 
     private void interact() {
-        playerLocation.update(this);
-        // TODO Interact with every direction.
         if (checkInteraction || interacting) {
+            playerLocation.update(this);
+            String tileRight = Level.getTile(playerLocation.bottom+1, playerLocation.right);
+            String tileLeft = Level.getTile(playerLocation.bottom+1, playerLocation.left);
             String npcCode = null;
-            if (Level.NPC.contains(Level.getTileMap()[playerLocation.bottom + 1][playerLocation.left]))
-                npcCode = Level.getTileMap()[playerLocation.bottom + 1][playerLocation.left];
-            else if (Level.NPC.contains(Level.getTileMap()[playerLocation.bottom + 1][playerLocation.right]))
-                npcCode = Level.getTileMap()[playerLocation.bottom + 1][playerLocation.right];
+            if(Level.NPC.contains(tileRight)) npcCode = tileRight;
+            else if(Level.NPC.contains(tileLeft)) npcCode = tileLeft;
             if (npcCode != null) {
+                currentFrame = UP.getKeyFrame(0, true);
                 NPC npc = (NPC) Level.getObject(npcCode);
                 if (interacting) {
                     // Update interaction status.
@@ -193,16 +170,16 @@ public class Player extends Rectangle {
 
     public TextureRegion getTexture() {
         // Flip to face right if facing left.
-        if(LEFTRIGHT.getKeyFrame(0).isFlipX())
+        if (LEFTRIGHT.getKeyFrame(0).isFlipX())
             LEFTRIGHT.getKeyFrame(0).flip(true, false);
         return LEFTRIGHT.getKeyFrame(0);
     }
 
-    public int getVelX(){
+    public int getVelX() {
         return velX;
     }
 
-    public int getVelY(){
+    public int getVelY() {
         return velY;
     }
 }

@@ -20,6 +20,7 @@ public class Level {
     private static HashMap<String, Interactive> objects = new HashMap<String, Interactive>();
     private String current = "map_01";
     private Texture bg;
+    private Texture bgOver;
 
     public Level(Yosefu game, Engine currentEngine) {
         this.game = game;
@@ -49,6 +50,7 @@ public class Level {
 
         bg = new Texture(Gdx.files.internal("grasssprite.png"));
         bg.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+//        bgOver = new Texture(Gdx.files.internal("levels/town_01.png"));
         setupLevel();
     }
 
@@ -84,6 +86,7 @@ public class Level {
     public void draw() {
         // Draw bg texture repeated to fill tile map.
         game.batch.draw(bg, 64, 64, bg.getWidth() * (tileMap[0].length - 2), bg.getHeight() * (tileMap.length - 2), 0, tileMap.length - 2, tileMap[0].length - 2, 0);
+//        game.batch.draw(bgOver, 0, 0);
     }
 
 
@@ -109,8 +112,8 @@ public class Level {
         loadLevel();
     }
 
-    public static String[][] getTileMap() {
-        return tileMap;
+    public static String getTile(int row, int col){
+        return tileMap[row][col];
     }
 
     public static HashMap<String, String> getObjectVariables() {
