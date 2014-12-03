@@ -34,14 +34,14 @@ public class Level {
         int start = 0;
         // Get location of start of tile map.
         for (int i = 0; i < rows.length; i++) {
-            if (rows[i].startsWith("1")) {
+            if (rows[i].startsWith(WALL)) {
                 start = i;
                 break;
             }
         }
 
         for (int i = 0; i < start; i++)
-            objectVariables.put(rows[i].substring(0, 1), rows[i].substring(2));
+            objectVariables.put(rows[i].substring(0, rows[i].indexOf(':')), rows[i].substring(rows[i].indexOf(':')+1));
 
         tileMap = new String[rows.length - start][rows[start].split(", ").length];
         for (int i = 0, j = start; i < tileMap.length; i++, j++) {
