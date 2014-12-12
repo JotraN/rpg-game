@@ -43,7 +43,7 @@ public class Player extends Rectangle {
         currentFrame = UP.getKeyFrame(0);
         stateTime = 0;
         playerLocation = new Location(this, 64);
-        stats = new Stats(10, 10, 3);
+        stats = new Stats(10, 3, 3);
     }
 
     public void draw(Yosefu game) {

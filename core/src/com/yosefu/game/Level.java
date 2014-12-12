@@ -31,26 +31,31 @@ public class Level {
     private void loadLevel() {
         FileHandle file = Gdx.files.internal("levels/" + current);
         String[] rows = file.readString().split("\\n");
-        int start = 0;
+        int varStart = 0;
+        bgOver = null;
+        if(rows[0].startsWith("#")) {
+            bgOver = new Texture(Gdx.files.internal("levels/" + rows[0].substring(rows[0].indexOf('#')+1)));
+            varStart = 1;
+        }
+        int mapStart = 0;
         // Get location of start of tile map.
-        for (int i = 0; i < rows.length; i++) {
+        for (int i = varStart; i < rows.length; i++) {
             if (rows[i].startsWith(WALL)) {
-                start = i;
+                mapStart = i;
                 break;
             }
         }
 
-        for (int i = 0; i < start; i++)
+        for (int i = varStart; i < mapStart; i++)
             objectVariables.put(rows[i].substring(0, rows[i].indexOf(':')), rows[i].substring(rows[i].indexOf(':')+1));
 
-        tileMap = new String[rows.length - start][rows[start].split(", ").length];
-        for (int i = 0, j = start; i < tileMap.length; i++, j++) {
+        tileMap = new String[rows.length - mapStart][rows[mapStart].split(", ").length];
+        for (int i = 0, j = mapStart; i < tileMap.length; i++, j++) {
             tileMap[i] = rows[j].split(", ");
         }
 
         bg = new Texture(Gdx.files.internal("grasssprite.png"));
         bg.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-//        bgOver = new Texture(Gdx.files.internal("levels/town_01.png"));
         setupLevel();
     }
 
@@ -86,7 +91,8 @@ public class Level {
     public void draw() {
         // Draw bg texture repeated to fill tile map.
         game.batch.draw(bg, 64, 64, bg.getWidth() * (tileMap[0].length - 2), bg.getHeight() * (tileMap.length - 2), 0, tileMap.length - 2, tileMap[0].length - 2, 0);
-//        game.batch.draw(bgOver, 0, 0);
+        if(bgOver != null)
+            game.batch.draw(bgOver, 0, 0);
     }
 
 
@@ -103,6 +109,7 @@ public class Level {
         objectVariables.clear();
         objects.clear();
         tileMap = null;
+        bg.dispose();
     }
 
     public void changeLevel(String name) {

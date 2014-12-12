@@ -25,10 +25,10 @@ public class Battle implements Screen {
             "attack", "defend", "talk", "run"
     };
     private int selection = 0;
-    private boolean attacking = false, running = false;
-    private boolean playerAnimating = false;
-    private int playerX = 300, playerY = 340, enemyX = 900, enemyY = 340;
-    private int groundHeight = 340, groundEdge = 250;
+    private boolean attacking = false, defending = false, running = false;
+    private boolean initialAnimation = false;
+    private int groundHeight = 340, groundEdge = 250, groundPlayerPosX = 300;
+    private int playerX = groundPlayerPosX, playerY = groundHeight, enemyX = 900, enemyY = 340;
     private int speed = 5;
 
     public Battle(Player player, Enemy enemy, Yosefu game, Screen screen) {
@@ -44,17 +44,18 @@ public class Battle implements Screen {
         enemyTexture = enemy.getTexture();
     }
 
-    @Override
     public void render(float delta) {
         // TODO Game over.
-        if (player.getStats().health < 0) game.setScreen(new TransitionScreen(game, new MainMenu(game)));
-        if (enemy.getStats().health < 0) {
+        if (player.getStats().health <= 0) game.setScreen(new TransitionScreen(game, new MainMenu(game)));
+        if (enemy.getStats().health <= 0) {
             enemy.kill();
             game.setScreen(new TransitionScreen(game, screen));
         }
         draw();
         if(attacking)
             animateAttack();
+        else if(defending)
+            animateDefend();
         else if(running)
             animateRun();
         else
@@ -120,15 +121,17 @@ public class Battle implements Screen {
         switch (selection) {
             case 0:
                 attacking = true;
-                playerAnimating = true;
+                initialAnimation = true;
                 break;
             case 1:
+                defending = true;
+                initialAnimation = true;
                 break;
             case 2:
                 break;
             case 3:
                 running = true;
-                playerAnimating = true;
+                initialAnimation = true;
                 playerTexture.flip(true, false);
                 break;
 
@@ -139,15 +142,15 @@ public class Battle implements Screen {
 
     private void animateAttack(){
         int maxHeight = groundHeight + 20;
-        if(playerAnimating) {
+        if(initialAnimation) {
             playerY += speed;
             if (playerY > maxHeight)
                 speed = -speed;
             if (playerY < groundHeight) {
                 playerY = groundHeight;
-                playerAnimating = false;
+                initialAnimation = false;
                 speed = -speed;
-                enemy.getStats().health -= player.getStats().atk;
+                attack(enemy.getStats(), player.getStats().atk);
             }
         } else{
             // Animate enemy attack.
@@ -158,16 +161,40 @@ public class Battle implements Screen {
                 enemyY = groundHeight;
                 attacking = false;
                 speed = -speed;
-                player.getStats().health -= enemy.getStats().atk;
+                attack(player.getStats(), enemy.getStats().atk);
+            }
+        }
+    }
+
+    private void animateDefend(){
+        int maxHeight = groundHeight + 20;
+        if(initialAnimation) {
+            // Animate enemy attack.
+            enemyY += speed;
+            if (enemyY > maxHeight)
+                speed = -speed;
+            if (enemyY < groundHeight) {
+                enemyY = groundHeight;
+                speed = -speed;
+                initialAnimation = false;
+            }
+        } else{
+            playerX -= speed;
+            if (playerX <= groundEdge)
+                speed = -speed;
+            if(playerX == groundPlayerPosX) {
+                defending = false;
+                speed = -speed;
+                defend(player.getStats(), enemy.getStats().atk, player.getStats().def);
             }
         }
     }
 
     private void animateRun(){
-        if(playerAnimating) {
+        if(initialAnimation) {
             playerX -= speed;
-            if (playerX < groundEdge)
-                playerAnimating = false;
+            if (playerX <= groundEdge)
+                initialAnimation = false;
         } else{
             enemy.getStats().health = enemy.getStats().maxHealth;
             player.x -= player.getVelX();
@@ -175,32 +202,34 @@ public class Battle implements Screen {
             game.setScreen(new TransitionScreen(game, screen));
         }
     }
-    @Override
-    public void resize(int width, int height) {
 
+    private void attack(Stats target, int atk){
+        target.health -= Math.ceil(Math.random() * atk) + atk;
     }
 
-    @Override
+    private void defend(Stats target, int atk, int def){
+        target.health -= Math.max(0, atk - (Math.random() * def));
+    }
+
+    public void resize(int width, int height) {
+    }
+
     public void show() {
 
     }
 
-    @Override
     public void hide() {
 
     }
 
-    @Override
     public void pause() {
 
     }
 
-    @Override
     public void resume() {
 
     }
 
-    @Override
     public void dispose() {
         shapeRenderer.dispose();
     }

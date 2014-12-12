@@ -1,6 +1,7 @@
 A:oldman.png#Joseph, I've been looking for you. The whole community is destroyed. You're the only one left who can fight. Save the world from evil. But do it with good. Evil lies ahead. Beware.
 a:map_02 256 64
-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+b:town_01 576 1088
+1, 1, 1, 1, 1, b, 1, 1, 1, 1, 1, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
